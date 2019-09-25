@@ -1,7 +1,7 @@
 import sys
 import os
 
-def fsb(bit, width, offset, data, padding, roop):
+def fsb(width, offset, data, padding, roop):
 	payload = ""
 	write_num = 0 
 	s = "$n"
@@ -28,3 +28,13 @@ def fsb(bit, width, offset, data, padding, roop):
 		
 	return payload
 
+def rot(s, num):
+	n = ""
+	for i in range(0, len(s)):
+		c = ord(s[i])
+		if c <= ord("z") and c >= ord("a"):
+			c = ((c%ord("a") + num) % 26)+ord("a") 
+		elif c <= ord("Z") and c >= ord("A"):
+			c = ((c%ord("A") + num) % 26)+ord("A")
+		n += chr(c)
+	return n 
