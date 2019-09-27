@@ -46,3 +46,10 @@ def b2d(s):
 		if s[i] == '1':
 			r += 1
 	return r
+
+def o2d(s):
+	r = 0 
+	for i in range(0, len(s)):
+		r = r * 8 
+		r += int(s[i])
+	return r
