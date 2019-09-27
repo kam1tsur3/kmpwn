@@ -38,3 +38,11 @@ def rot(s, num):
 			c = ((c%ord("A") + num) % 26)+ord("A")
 		n += chr(c)
 	return n 
+
+def b2d(s):
+	r = 0 
+	for i in range(0, len(s)):
+		r = r << 1 
+		if s[i] == '1':
+			r += 1
+	return r
