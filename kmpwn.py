@@ -53,3 +53,7 @@ def o2d(s):
 		r = r * 8 
 		r += int(s[i])
 	return r
+
+# for house of corrosion
+def offset2size(off):
+	return ((off)*2-0x10)
